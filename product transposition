@@ -1,0 +1,147 @@
+def caesar_encrypt(text, shift):
+    result = ""
+
+    for char in text:
+
+        if char.isalpha():
+
+            base = 65 if char.isupper() else 97
+
+            result += chr((ord(char) - base + shift) % 26 + base)
+
+        else:
+            result += char
+
+    return result
+
+
+def caesar_decrypt(text, shift):
+    result = ""
+
+    for char in text:
+
+        if char.isalpha():
+
+            base = 65 if char.isupper() else 97
+
+            result += chr((ord(char) - base - shift) % 26 + base)
+
+        else:
+            result += char
+
+    return result
+
+
+def rail_fence_encrypt(text, key):
+    rail = [['\n' for _ in range(len(text))] for _ in range(key)]
+
+    dir_down = False
+
+    row, col = 0, 0
+
+    for i in range(len(text)):
+
+        if row == 0 or row == key - 1:
+            dir_down = not dir_down
+
+        rail[row][col] = text[i]
+
+        col += 1
+
+        row += 1 if dir_down else -1
+
+    result = []
+
+    for i in range(key):
+
+        for j in range(len(text)):
+
+            if rail[i][j] != '\n':
+                result.append(rail[i][j])
+
+    return "".join(result)
+
+
+def rail_fence_decrypt(cipher, key):
+    rail = [['\n' for _ in range(len(cipher))] for _ in range(key)]
+
+    dir_down = None
+
+    row, col = 0, 0
+
+    for i in range(len(cipher)):
+
+        if row == 0:
+            dir_down = True
+
+        if row == key - 1:
+            dir_down = False
+
+        rail[row][col] = '*'
+
+        col += 1
+
+        row += 1 if dir_down else -1
+
+    index = 0
+
+    for i in range(key):
+
+        for j in range(len(cipher)):
+
+            if rail[i][j] == '*' and index < len(cipher):
+                rail[i][j] = cipher[index]
+                index += 1
+
+    result = []
+
+    row, col = 0, 0
+
+    for i in range(len(cipher)):
+
+        if row == 0:
+            dir_down = True
+
+        if row == key - 1:
+            dir_down = False
+
+        result.append(rail[row][col])
+
+        col += 1
+
+        row += 1 if dir_down else -1
+
+    return "".join(result)
+
+
+def product_encrypt(plaintext, caesar_shift, rail_key):
+
+    substituted_text = caesar_encrypt(plaintext, caesar_shift)
+
+    final_ciphertext = rail_fence_encrypt(substituted_text, rail_key)
+
+    return final_ciphertext
+
+
+def product_decrypt(ciphertext, caesar_shift, rail_key):
+
+    transposed_plaintext = rail_fence_decrypt(ciphertext, rail_key)
+
+    original_plaintext = caesar_decrypt(transposed_plaintext, caesar_shift)
+
+    return original_plaintext
+
+
+message = input("Enter your message: ")
+
+caesar_shift_val = int(input("Enter Caesar shift value: "))
+
+rail_fence_key_val = int(input("Enter Rail Fence key (number of rails): "))
+
+encrypted_message = product_encrypt(message, caesar_shift_val, rail_fence_key_val)
+
+print("Encrypted (Product) Message:", encrypted_message)
+
+decrypted_message = product_decrypt(encrypted_message, caesar_shift_val, rail_fence_key_val)
+
+print("Decrypted (Original) Message:", decrypted_message)
