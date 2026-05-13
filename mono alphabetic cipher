@@ -1,0 +1,56 @@
+import random
+import string
+
+alphabet = string.ascii_lowercase
+
+key_list = list(alphabet)
+random.shuffle(key_list)
+
+key = "".join(key_list)
+
+encrypt_map = dict(zip(alphabet, key))
+decrypt_map = dict(zip(key, alphabet))
+
+def encrypt(message):
+
+    encrypted = ""
+
+    for ch in message.lower():
+
+        if ch in encrypt_map:
+            encrypted += encrypt_map[ch]
+
+        else:
+            encrypted += ch
+
+    return encrypted
+
+
+def decrypt(message):
+
+    decrypted = ""
+
+    for ch in message.lower():
+
+        if ch in decrypt_map:
+            decrypted += decrypt_map[ch]
+
+        else:
+            decrypted += ch
+
+    return decrypted
+
+
+message = input("Enter the message: ")
+
+encrypted_message = encrypt(message)
+
+decrypted_message = decrypt(encrypted_message)
+
+print("\nAlphabet Mapping:")
+
+for a, k in zip(alphabet, key):
+    print(a, "->", k)
+
+print("\nEncrypted Message:", encrypted_message)
+print("Decrypted Message:", decrypted_message)
