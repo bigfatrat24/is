@@ -1,0 +1,90 @@
+def get_key_order(key):
+    sorted_key = sorted(list(key))
+
+    order = []
+
+    for char in key:
+        order.append(sorted_key.index(char) + 1)
+        sorted_key[sorted_key.index(char)] = None
+
+    return order
+
+
+def encrypt(text, key):
+    text = text.replace(" ", "")
+
+    order = get_key_order(key)
+
+    cols = len(key)
+
+    rows = (len(text) + cols - 1) // cols
+
+    matrix = []
+
+    index = 0
+
+    for i in range(rows):
+
+        row = []
+
+        for j in range(cols):
+
+            if index < len(text):
+                row.append(text[index])
+                index += 1
+
+            else:
+                row.append('_')
+
+        matrix.append(row)
+
+    cipher = ""
+
+    for num in range(1, cols + 1):
+
+        col_index = order.index(num)
+
+        for row in matrix:
+            cipher += row[col_index]
+
+    return cipher
+
+
+def decrypt(cipher, key):
+    order = get_key_order(key)
+
+    cols = len(key)
+
+    rows = len(cipher) // cols
+
+    matrix = [['' for _ in range(cols)] for _ in range(rows)]
+
+    index = 0
+
+    for num in range(1, cols + 1):
+
+        col_index = order.index(num)
+
+        for row in range(rows):
+            matrix[row][col_index] = cipher[index]
+            index += 1
+
+    text = ""
+
+    for row in matrix:
+        text += ''.join(row)
+
+    return text.replace('_', '')
+
+
+text = input("Enter plaintext - ")
+
+key = input("Enter keyword (ex - ABCD) - ")
+
+cipher = encrypt(text, key)
+
+print("Cipher Text =", cipher)
+
+original = decrypt(cipher, key)
+
+print("Decrypted Text =", original)
